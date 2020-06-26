@@ -1,9 +1,11 @@
-import React/* , { useEffect, useState } */ from 'react';
-import * as isEqual from 'react-fast-compare';
+import React, { Fragment, Component/*  useEffect, useState */ } from 'react';
+import isEqual from 'react-fast-compare';
 import io from 'socket.io-client';
 import Comment from './components/Comment';
+import MusicBox from './components/MusicBox';
+import MusicBoxSample from './components/MusicBoxSample';
 const server = "https://8080-d4c71721-ae9b-4039-a60f-85529056ee9f.ws-us02.gitpod.io/"
-class Main extends React.Component {
+class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -17,7 +19,7 @@ class Main extends React.Component {
         this.socket.on('connect', console.log);
         this.socket.on('comments', (data) => {
             if (isEqual(data[0], this.state.comments[0])) return;
-            this.setState((prevState) => {
+            this.setState(() => {
                 return { comments: data }
             });
             console.log(this.socket.id, data)
@@ -37,7 +39,9 @@ class Main extends React.Component {
         console.log("------------------------render-------------------")
         return (
             <div className="App">
-                <Comment comments={this.state.comments} />
+                {/* <Comment comments={this.state.comments} /> */}
+                <MusicBox/>
+                <MusicBoxSample />
             </div>
         );
     }
