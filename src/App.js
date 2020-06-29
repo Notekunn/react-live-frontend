@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import Comment from './components/Comment';
 import MusicBox from './components/MusicBox';
 import MusicBoxSample from './components/MusicBoxSample';
-const server = "https://8080-d4c71721-ae9b-4039-a60f-85529056ee9f.ws-us02.gitpod.io/"
+const server = "http://localhost:8080/"
 class Main extends Component {
     constructor(props) {
         super(props);

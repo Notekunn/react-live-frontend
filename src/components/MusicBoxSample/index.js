@@ -157,7 +157,6 @@ class App extends Component {
         return (
             <div className='music-box2'>
                 <section className='section'>
-                    <h1>ReactPlayer Demo</h1>
                     <ReactPlayer
                         ref={this.ref}
                         className='react-player'
@@ -408,13 +407,6 @@ class App extends Component {
                         </tbody>
                     </table>
                 </section>
-                <footer className='footer'>
-                    Version <strong>{version}</strong>
-                    {SEPARATOR}
-                    <a href='https://github.com/CookPete/react-player'>GitHub</a>
-                    {SEPARATOR}
-                    <a href='https://www.npmjs.com/package/react-player'>npm</a>
-                </footer>
             </div>
         )
     }
