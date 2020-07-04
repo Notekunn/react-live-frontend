@@ -1,0 +1,10 @@
+.music_box {
+	background: #ffffff;
+	max-width: 600px;
+	padding: 10px;
+}
+
+.music_box_control {
+	width: 600px;
+	margin-bottom: 16px;
+}

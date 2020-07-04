@@ -1,10 +1,9 @@
-import React, { Fragment, Component/*  useEffect, useState */ } from 'react';
-import isEqual from 'react-fast-compare';
-import io from 'socket.io-client';
-import Comment from './components/Comment';
+import React, { /* Fragment,  */Component/*  useEffect, useState */ } from 'react';
+// import isEqual from 'react-fast-compare';
+// import io from 'socket.io-client';
+// import Comment from './components/Comment';
 import MusicBox from './components/MusicBox';
-import MusicBoxSample from './components/MusicBoxSample';
-const server = "http://localhost:8080/"
+// const server = "http://localhost:8080/"
 class Main extends Component {
     constructor(props) {
         super(props);
@@ -14,23 +13,23 @@ class Main extends Component {
         this.socket = null;
     }
     componentDidMount() {
-        this.socket = io(server);
-        console.log(this.socket)
-        this.socket.on('connect', console.log);
-        this.socket.on('comments', (data) => {
-            if (isEqual(data[0], this.state.comments[0])) return;
-            this.setState(() => {
-                return { comments: data }
-            });
-            console.log(this.socket.id, data)
-        });
-        this.socket.on('disconnect', () => {
-            console.log(this.socket.id)
-        })
+        // this.socket = io(server);
+        // console.log(this.socket)
+        // this.socket.on('connect', console.log);
+        // this.socket.on('comments', (data) => {
+        //     if (isEqual(data[0], this.state.comments[0])) return;
+        //     this.setState(() => {
+        //         return { comments: data }
+        //     });
+        //     console.log(this.socket.id, data)
+        // });
+        // this.socket.on('disconnect', () => {
+        //     console.log(this.socket.id)
+        // })
     }
     componentWillUnmount() {
-        this.socket.disconnect()
-        this.socket.destroy()
+        // this.socket.disconnect()
+        // this.socket.destroy()
     }
     componentDidUpdate() {
         console.log("------------------------Rerender-----------------")
@@ -41,7 +40,6 @@ class Main extends Component {
             <div className="App">
                 {/* <Comment comments={this.state.comments} /> */}
                 <MusicBox/>
-                <MusicBoxSample />
             </div>
         );
     }

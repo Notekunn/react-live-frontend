@@ -3,42 +3,106 @@ import ReactPlayer from 'react-player';
 
 import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/core/Slider';
+import Button from '@material-ui/core/Button';
+import Modal from "@material-ui/core/Modal";
+
 import VolumeDown from '@material-ui/icons/VolumeDown';
 import VolumeUp from '@material-ui/icons/VolumeUp';
+import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
+import SkipNextIcon from '@material-ui/icons/SkipNext';
+import PauseIcon from '@material-ui/icons/Pause';
+import PlayIcon from '@material-ui/icons/PlayArrow';
+
+import styles from './index.module.css';
 class MusicBox extends Component {
     constructor(props) {
         super(props);
         this.state = {
             url: null,
+            list: [{
+                url: 'https://www.youtube.com/watch?v=oUFJJNQGwhk',
+                name: ''
+            }, {
+                url: 'https://www.youtube.com/watch?v=JahJfGvn_zQ',
+                name: ''
+            }, {
+                url: 'https://www.youtube.com/watch?v=euCF_BcJpt0',
+                name: ''
+            }],
+            currentIndex: -1,
             controls: true,
-            volume: 50,
-            progress: 0,
+            volume: 0.5,
+            played: 0,
+            playing: false,
+            seeking: false,
         }
     }
-    setMusic = () => {
-        this.setState({ url: 'https://www.youtube.com/watch?v=Y1e1wl8ngfw' })
+    componentDidMount() {
+        let { list, currentIndex } = this.state;
+        if (list.length === 0) return;
+        currentIndex = (currentIndex + 1) % list.length;
+        this.setState({
+            url: list[currentIndex].url,
+            currentIndex,
+        })
+    }
+    handlePlayPause = () => {
+        this.setState({ playing: !this.state.playing });
     }
     handleVolume = (event, value) => {
 
         console.log("Volume Change: ", value);
         this.setState({ volume: value });
     }
-    handleProgressSeek = (event, value) => {
+    handleProgress = (state) => {
 
-        console.log("Process Seek: ", event, value);
-        this.setState({ progress: value });
-        // this.player.seekTo(1)
+        // console.log("onProgress: ", state);
+        if (!this.state.seeking) {
+            this.setState({ played: state.played });
+        }
     }
-    handleProgress = (event, value) => {
+    handleDuration = (duration) => {
+        console.log('onDuration: ', duration);
+        this.setState({ duration })
+    }
+    handleSeek = (event, value) => {
 
-        console.log("Process Change: ", event, value);
-        // this.setState({ progress: event.target.value });
-        // this.player.seekTo(1)
-        console.log(this)
+        // console.log("Seeking: ", event, value);
+        this.setState({ played: value, seeking: true });
+    }
+    handleSeekCommited = (event, value) => {
+        // console.log("Seek end: ", event, value);
+        this.setState({ played: value, seeking: false });
+        this.player.seekTo(parseFloat(value))
+    }
+    ref = player => {
+        this.player = player;
+    }
+    handlePrevious = () => {
+
+        let { list, currentIndex } = this.state;
+        if (list.length === 0) return;
+        currentIndex = (currentIndex + list.length - 1) % list.length;
+        this.setState({
+            url: list[currentIndex].url,
+            currentIndex,
+            played: 0,
+        })
+    }
+    handleNext = () => {
+
+        let { list, currentIndex } = this.state;
+        if (list.length === 0) return;
+        currentIndex = (currentIndex + 1) % list.length;
+        this.setState({
+            url: list[currentIndex].url,
+            currentIndex,
+            played: 0,
+        })
     }
     render() {
         return (
-            <div className='music-box'>
+            <div className={styles.music_box}>
                 <ReactPlayer
                     ref={this.ref}
                     className='react-player'
@@ -46,12 +110,12 @@ class MusicBox extends Component {
                     height='400px'
                     url={this.state.url}
                     // pip={pip}
-                    playing={true}
+                    playing={this.state.playing}
                     controls={this.state.controls}
                     // light={light}
                     // loop={loop}
                     // playbackRate={playbackRate}
-                    volume={this.state.volume / 100}
+                    volume={this.state.volume}
                     // muted={muted}
                     // onReady={() => console.log('onReady')}
                     // onStart={() => console.log('onStart')}
@@ -64,27 +128,58 @@ class MusicBox extends Component {
                     // onEnded={this.handleEnded}
                     // onError={e => console.log('onError', e)}
                     onProgress={this.handleProgress}
-                // onDuration={console.log}
+                    onDuration={this.handleDuration}
                 />
-                <div className="music-box-control" style={{ width: '300px' }}>
-                    <button onClick={this.setMusic}>Đổi bài</button>
+                <div className={styles.music_box_control}>
+                    <Grid container spacing={2}>
+                        <Button>Chỉnh list nhạc</Button>
+                        <Modal open={false}>
+                            <div style={{
+                                position: 'absolute',
+                                width: 400,
+                                backgroundColor: '#ffffff',
+                                border: '2px solid #000',
+                                // boxShadow: theme.shadows[5],
+                                padding: '5px',
+                            } }>
+                                <h2 id="simple-modal-title">Text in a modal</h2>
+                                <p id="simple-modal-description">
+                                    {'Duis mollis, est non commodo luctus, nisi erat porttitor ligula.'}
+                                </p>
+                            </div>
+                        </Modal>
+                    </Grid>
                     <Grid container spacing={2}>
                         <Grid item>
                             <VolumeDown />
                         </Grid>
                         <Grid item xs>
-                            <Slider value={this.state.volume} onChange={this.handleVolume} aria-labelledby="continuous-slider" />
+                            <Slider value={this.state.volume} onChange={this.handleVolume} min={0} max={1} step={0.01} aria-labelledby="continuous-slider" />
                         </Grid>
                         <Grid item>
                             <VolumeUp />
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item xs>
-                            <Slider value={this.state.progress} onChange={this.handleProgressSeek} aria-labelledby="continuous-slider" />
+                        <Grid item xs style={{ marginLeft: '8px' }}>
+                            <Slider value={this.state.played} min={0} max={1} step={0.001} onChange={this.handleSeek} onChangeCommitted={this.handleSeekCommited} aria-labelledby="continuous-slider" />
                         </Grid>
                     </Grid>
 
+                    <Grid container spacing={2}>
+                        <Grid item xs >
+                            <SkipPreviousIcon fontSize="large" onClick={this.handlePrevious} />
+                        </Grid>
+                        <Grid item xs>
+                            {this.state.playing ?
+                                <PauseIcon fontSize="large" onClick={this.handlePlayPause} /> :
+                                <PlayIcon fontSize="large" onClick={this.handlePlayPause} />}
+                        </Grid>
+                        <Grid item xs>
+                            <SkipNextIcon fontSize="large" onClick={this.handleNext} />
+                        </Grid>
+
+                    </Grid>
                 </div>
             </div>
         )
