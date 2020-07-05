@@ -4,16 +4,26 @@ import ReactPlayer from 'react-player';
 import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/core/Slider';
 import Button from '@material-ui/core/Button';
-import Modal from "@material-ui/core/Modal";
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
 
-import VolumeDown from '@material-ui/icons/VolumeDown';
-import VolumeUp from '@material-ui/icons/VolumeUp';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
-import PauseIcon from '@material-ui/icons/Pause';
-import PlayIcon from '@material-ui/icons/PlayArrow';
+import VolumeDown from '@material-ui/icons/VolumeDownRounded';
+import VolumeUp from '@material-ui/icons/VolumeUpRounded';
+import SkipPreviousIcon from '@material-ui/icons/SkipPreviousRounded';
+import SkipNextIcon from '@material-ui/icons/SkipNextRounded';
+import PauseIcon from '@material-ui/icons/PauseRounded';
+import PlayIcon from '@material-ui/icons/PlayArrowRounded';
+import MusicNoteIcon from '@material-ui/icons/MusicNoteRounded';
+import EditIcon from '@material-ui/icons/EditRounded';
+import QueueMusicIcon from '@material-ui/icons/QueueMusicRounded';
+import PlaylistAddIcon from '@material-ui/icons/PlaylistAddRounded';
 
-import styles from './index.module.css';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+import styles from './index.module.scss';
 class MusicBox extends Component {
     constructor(props) {
         super(props);
@@ -35,6 +45,8 @@ class MusicBox extends Component {
             played: 0,
             playing: false,
             seeking: false,
+            isOpen: false,
+            isType: false,
         }
     }
     componentDidMount() {
@@ -106,48 +118,71 @@ class MusicBox extends Component {
                 <ReactPlayer
                     ref={this.ref}
                     className='react-player'
-                    width='600px'
-                    height='400px'
+                    width='0px'
+                    height='0px'
                     url={this.state.url}
                     // pip={pip}
                     playing={this.state.playing}
                     controls={this.state.controls}
-                    // light={light}
-                    // loop={loop}
-                    // playbackRate={playbackRate}
                     volume={this.state.volume}
-                    // muted={muted}
-                    // onReady={() => console.log('onReady')}
-                    // onStart={() => console.log('onStart')}
-                    // onPlay={this.handlePlay}
-                    // onEnablePIP={this.handleEnablePIP}
-                    // onDisablePIP={this.handleDisablePIP}
-                    // onPause={this.handlePause}
-                    // onBuffer={() => console.log('onBuffer')}
-                    // onSeek={e => console.log('onSeek', e)}
-                    // onEnded={this.handleEnded}
-                    // onError={e => console.log('onError', e)}
+                    onReady={() => console.log('onReady')}
+                    onStart={() => console.log('onStart')}
+                    onPlay={() => this.setState({ playing: true })}
+                    onPause={() => this.setState({ playing: false })}
+                    onEnded={this.handleNext}
+                    onError={e => console.log('onError', e)}
                     onProgress={this.handleProgress}
                     onDuration={this.handleDuration}
                 />
                 <div className={styles.music_box_control}>
-                    <Grid container spacing={2}>
-                        <Button>Chỉnh list nhạc</Button>
-                        <Modal open={false}>
-                            <div style={{
-                                position: 'absolute',
-                                width: 400,
-                                backgroundColor: '#ffffff',
-                                border: '2px solid #000',
-                                // boxShadow: theme.shadows[5],
-                                padding: '5px',
-                            } }>
-                                <h2 id="simple-modal-title">Text in a modal</h2>
-                                <p id="simple-modal-description">
-                                    {'Duis mollis, est non commodo luctus, nisi erat porttitor ligula.'}
-                                </p>
-                            </div>
-                        </Modal>
+                    <Grid container spacing={2} justify="space-around" alignItems="center">
+                        <Button variant="outlined" color="primary" onClick={() => this.setState({ isOpen: true })}>Chỉnh list nhạc</Button>
+                        <Dialog maxWidth="md" scroll="paper" fullWidth open={this.state.isOpen} onClose={() => this.setState({ isOpen: false })} aria-labelledby="form-dialog-title">
+                            <DialogTitle id="form-dialog-title">
+                                <Grid container spacing={2} alignItems="center" justify="center">
+                                    <Grid item xs={2} align="center"><QueueMusicIcon fontSize="large" color="primary" /></Grid>
+                                    <Grid item xs={8} align="center">{" Danh sách nhạc "}</Grid>
+                                    <Grid item xs={2} align="center"><Button onClick={() => this.setState({ isType: true })}><PlaylistAddIcon fontSize="large" color="primary" /></Button></Grid>
+                                </Grid>
+                            </DialogTitle>
+                            <DialogContent>
+                                <Grid container direction="column" spacing={3}>
+                                    {this.state.list.map((e, i) =>
+                                        <Grid container key={i} direction="row" justify="center" alignItems="center">
+                                            <Grid item xs={1} align="center">
+                                                <MusicNoteIcon fontSize="large" color="primary" />
+                                            </Grid>
+                                            <Grid item xs={10} align="left">
+                                                <Typography>{e.url}</Typography>
+                                            </Grid>
+                                            <Grid item xs={1} align="center">
+                                                <Button>
+                                                    <EditIcon fontSize="default" color="primary" />
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
+                                    )}
+                                    {this.state.isType &&
+                                        <Grid container direction="row" justify="center" alignItems="center">
+                                            <Grid item xs={10} >
+                                                <TextField variant="outlined" size="small" fullWidth ></TextField>
+                                            </Grid>
+                                            <Grid item xs={2} align="center">
+                                                <Button variant="outlined" size="large" color="primary" onClick={() => this.setState({ isType: false })}>Thêm</Button>
+                                            </Grid>
+                                        </Grid>
+                                    }
+                                </Grid>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={() => this.setState({ isOpen: false })} color="primary">
+                                    {'Cancel'}
+                                </Button>
+                                <Button onClick={() => this.setState({ isOpen: false })} color="primary">
+                                    {'Update'}
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item>
@@ -167,16 +202,16 @@ class MusicBox extends Component {
                     </Grid>
 
                     <Grid container spacing={2}>
-                        <Grid item xs >
-                            <SkipPreviousIcon fontSize="large" onClick={this.handlePrevious} />
+                        <Grid item xs align="center">
+                            <SkipPreviousIcon color="primary" fontSize="large" onClick={this.handlePrevious} />
                         </Grid>
-                        <Grid item xs>
+                        <Grid item xs align="center">
                             {this.state.playing ?
-                                <PauseIcon fontSize="large" onClick={this.handlePlayPause} /> :
-                                <PlayIcon fontSize="large" onClick={this.handlePlayPause} />}
+                                <PauseIcon fontSize="large" color="secondary" onClick={this.handlePlayPause} /> :
+                                <PlayIcon fontSize="large" color="primary" onClick={this.handlePlayPause} />}
                         </Grid>
-                        <Grid item xs>
-                            <SkipNextIcon fontSize="large" onClick={this.handleNext} />
+                        <Grid item xs align="center">
+                            <SkipNextIcon color="primary" fontSize="large" onClick={this.handleNext} />
                         </Grid>
 
                     </Grid>

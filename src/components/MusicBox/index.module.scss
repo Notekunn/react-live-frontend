@@ -1,0 +1,22 @@
+$top : 25%;
+$left : 25%; 
+.music_box {
+	background: #ffffff;
+	max-width: 600px;
+	padding: 10px;
+}
+
+.music_box_control {
+	width: 600px;
+	margin-top: 16px;
+}
+.music_box_modal {    
+    position: absolute;
+    width: 600px;
+    background-color: #ffffff;
+    padding: 5px;    
+    top: $top;
+    left: $left;
+    transform: translate(-$top, -$left); 
+  
+}
